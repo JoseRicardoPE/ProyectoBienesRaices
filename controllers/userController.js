@@ -2,7 +2,7 @@ import { body, validationResult } from "express-validator";
 import User from "../models/User.js";
 import Swal from "sweetalert2";
 import { generatorId } from "../helpers/tokens.js";
-import { emailRegister} from "../helpers/emails.js";
+import { emailRegister } from "../helpers/emails.js";
 
 const formLogin = (req, res) => {
   res.render("auth/login", {
@@ -11,8 +11,13 @@ const formLogin = (req, res) => {
 };
 
 const formRegister = (req, res) => {
+
+  //console.log(req.csrfToken()); //* función csrfToken es exclusiva de csurf.
+
   res.render("auth/register", {
     view: "Crear cuenta",
+    csrfToken: req.csrfToken(), //* Se manda el token de csurf y lo compara con la llave privada que está registrada dentro de nuestra aplicación.
+                                //* Lo debo copiar y pegar en la función de registrar usuario y confirmar email también para que no mande error.
   });
 };
 
@@ -57,6 +62,7 @@ const registerUser = async (req, res) => {
     //? Si no está vacío hay errores
     return res.render("auth/register", {
       view: "crear cuenta",
+      csrfToken: req.csrfToken(),
       errors: result.array(),
       user: {
         name: req.body.name,
@@ -70,6 +76,7 @@ const registerUser = async (req, res) => {
   if (userExist) {
     return res.render("auth/register", {
       view: "crear cuenta",
+      csrfToken: req.csrfToken(),
       errors: [
         {
           msg: "La cuenta de correo que ha ingresado ya se encuentra registrada con otro usuario.",
@@ -95,14 +102,45 @@ const registerUser = async (req, res) => {
     name: user.name,
     email: user.email,
     token: user.token,
-  })
+  });
 
   // * Mostrar mensaje de confirmación (Esta vista no se mostrará hasta que no se haya generado el usuario.)
   res.render("templates/message", {
     view: "Cuenta creada correctamente",
     message: "Hemos enviado un email de confirmación, ¡presiona en el enlace!",
-  })
-  
+  });
+};
+
+// *Función que comprueba una cuenta de correo
+const confirm = async (req, res) => {
+  const { token } = req.params;
+  // console.log(token);
+
+  // *Con token, vamos a verificar si el token es válido (Verificar si hay un usuario que tenga ese token).
+  const tokenUser = await User.findOne({ where: { token } });
+  // console.log(tokenUser)
+
+  if (!tokenUser) {
+    return res.render("auth/confirmAccount", {
+      view: "¡Error al confirmar tu cuenta!",
+      message: "¡Hubo un error al confirmar tu cuenta. ¡Intenta de nuevo!",
+      error: true, //*error lo paso en la vista confirmAccount
+    });
+  }
+
+  // *Confirmar la cuenta (Modificamos tokenUser, lo cambiamos).
+  tokenUser.token = null; //*Eliminamos el token de la db. (Es de un solo uso).
+  tokenUser.confirmm = true;
+  await tokenUser.save(); //*guardamos esos cambios en la db.
+
+  res.render("auth/confirmAccount", {
+    view: "¡Cuenta confirmada!",
+    message: "¡La cuenta ha sido verificada satisfactoriamente!",
+  });  
+
+  // console.log(tokenUser);
+  // console.log(tokenUser.token);
+
 };
 
 const formResetPassword = (req, res) => {
@@ -111,4 +149,4 @@ const formResetPassword = (req, res) => {
   });
 };
 
-export { formLogin, formRegister, registerUser, formResetPassword };
+export { formLogin, formRegister, registerUser, confirm, formResetPassword };
