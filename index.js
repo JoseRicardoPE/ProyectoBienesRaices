@@ -1,7 +1,8 @@
-//const express = require("express"); //?commonjs module
-import express from "express"; //?ecmascript module (recommended)
+//const express = require("express"); //*commonjs module
+import express from "express"; //*ecmascript module (recommended)
 import router from "./routes/routes.js";
-import csrf from "csurf";
+
+import csrf from "csurf";  //*csurf es la implementación para Express.
 import cookieParser from "cookie-parser";
 
 // *Mando llamar la base de datos
@@ -16,13 +17,13 @@ app.set("views", "./views");
 // *Encontrar archivos estáticos (public)
 app.use(express.static("public"));
 
-// ?Habilitar lectura de datos de formularios
+// *Habilitar lectura de datos de formularios
 app.use(express.urlencoded({ extended: true })); //!si tiene bodyParser en vez de express, es solo cambiarlo
 
-// ?Habilitar cookieParser (Lo requier csurf para funcionar correctamente).
+// *Habilitar cookieParser (Lo requiere csurf para funcionar correctamente).
 app.use(cookieParser());
 
-// ?Habilitar CSRF
+// *Habilitar CSRF
 app.use(csrf({cookie: true}));
 
 // *Middleware de express para múltiples rutas.
@@ -32,7 +33,7 @@ app.use("/auth", router);
 // *Conexión con la base de datos
 try {
   await db.authenticate();
-  //?sync crea las tablas en caso de que no estén creadas.
+  //*sync crea las tablas en caso de que no estén creadas.
   db.sync();
   console.log("--------------------------------------------")
   console.log("Conexión establecida con la base de datos");

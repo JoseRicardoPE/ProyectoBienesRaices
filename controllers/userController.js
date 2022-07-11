@@ -1,8 +1,9 @@
 import { body, validationResult } from "express-validator";
+import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import Swal from "sweetalert2";
 import { generatorId } from "../helpers/tokens.js";
-import { emailRegister } from "../helpers/emails.js";
+import { emailRegister, emailForgotPassword } from "../helpers/emails.js";
 
 const formLogin = (req, res) => {
   res.render("auth/login", {
@@ -15,7 +16,7 @@ const formRegister = (req, res) => {
 
   res.render("auth/register", {
     view: "Crear cuenta",
-    csrfToken: req.csrfToken(), //* Se manda el token de csurf y lo compara con la llave privada que está registrada dentro de nuestra aplicación.
+    csrfToken: req.csrfToken(), //* Se renderiza el token de csurf y se manda como parte del form, y lo compara con la llave privada que está registrada dentro de nuestra aplicación.
     //* Lo debo copiar y pegar en la función de registrar usuario y confirmar email también para que no mande error.
   });
 };
@@ -32,8 +33,10 @@ const registerUser = async (req, res) => {
     .run(req);
 
   await body("email")
-    .isEmail()
+    .notEmpty()
     .withMessage("El campo email es obligatorio!")
+    .isEmail()
+    .withMessage("¡Eso no parece un email!")
     .run(req);
 
   await body("password")
@@ -57,8 +60,8 @@ const registerUser = async (req, res) => {
   const result = validationResult(req);
 
   //* Verificar que el resultado esté vacío (Ese result se muestra en un arreglo, por lo que es posible iterarlo).
-  //? Si result está vacío quiere decir que no hay ningún error y se puede agregar el usuario.
-  //? Si no está vacío hay errores
+  //* Si result está vacío quiere decir que no hay ningún error y se puede agregar el usuario.
+  //* Si no está vacío hay errores
   if (!result.isEmpty()) {
     return res.render("auth/register", {
       view: "crear cuenta",
@@ -111,12 +114,12 @@ const registerUser = async (req, res) => {
   });
 };
 
-// *Función que comprueba una cuenta de correo
+// *Función que confirma o comprueba una cuenta de correo
 const confirm = async (req, res) => {
   const { token } = req.params;
   // console.log(token);
 
-  // *Con token, vamos a verificar si el token es válido (Verificar si hay un usuario que tenga ese token).
+  // *Con la constante token vamos a verificar si el token es válido (Verificar si hay un usuario que tenga ese token).
   const tokenUser = await User.findOne({ where: { token } });
   // console.log(tokenUser)
 
@@ -130,7 +133,7 @@ const confirm = async (req, res) => {
 
   // *Confirmar la cuenta (Modificamos tokenUser, lo cambiamos).
   tokenUser.token = null; //*Eliminamos el token de la db. (Es de un solo uso).
-  tokenUser.confirmm = true;
+  tokenUser.confirmm = true; //*En el schema se declaró como boolean
   await tokenUser.save(); //*guardamos esos cambios en la db.
 
   res.render("auth/confirmAccount", {
@@ -142,10 +145,151 @@ const confirm = async (req, res) => {
   // console.log(tokenUser.token);
 };
 
-const formResetPassword = (req, res) => {
-  res.render("auth/resetPass", {
+//* Para cambiar la contraseña vamos a generar un token nuevo y le enviamos un email al usuario que ha solicitado el reestablecimiento de password.
+const formResetPassword = async (req, res) => {
+  res.render("auth/forgotPassword", {
     view: "Recupera tu contraseña a Bienes Raices",
+    csrfToken: req.csrfToken(),
   });
 };
 
-export { formLogin, formRegister, registerUser, confirm, formResetPassword };
+//* resetPassword solo validará el email para identificar que persona quiere resetear su contraseña.
+const resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  //* Validamos el campo de email
+  await body("email")
+    .notEmpty()
+    .withMessage("¡El campo email es obligatorio!")
+    .isEmail()
+    .withMessage("¡Eso no parece un email!")
+    .run(req);
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    //* Si encuentra errores
+    return res.render("auth/forgotPassword", {
+      view: "Recupera tu contraseña a Bienes Raices",
+      csrfToken: req.csrfToken(),
+      errors: result.array(),
+    });
+  }
+
+  //* En caso de que si sea un email correcto tenemos que buscar al usuario.
+  //* Si el usuario existe, debemos generar un nuevo token y enviar un email.
+  //* Cada vez que el usuario solicite reestablecimiento de password se generará un nuevo token en la bd.
+  //* En caso de que el usuario no exista, renderizamos un mensaje indicando que no se encontró un usuario con esa cuenta.
+  const userEmail = await User.findOne({ where: { email } });
+  // console.log(userEmail);
+
+  //* Si el usuario no está registrado en la bd.
+  if (!userEmail) {
+    return res.render("auth/forgotPassword", {
+      view: "Recupera tu contraseña a Bienes Raices",
+      csrfToken: req.csrfToken(),
+      errors: [
+        {
+          msg: "La cuenta de email que ha ingresado no se encuentra asociada a un usuario registrado en nuestra Base de Datos. ¡Inténtelo de nuevo!",
+        },
+      ],
+    });
+  }
+
+  //* Generar un token y enviar el email para que el usuario pueda cambiar la contraseña.
+  userEmail.token = generatorId();
+  await userEmail.save();
+
+  //* Enviar un email al usuario
+  //* emailForgotPassword viene del helper email.js
+  emailForgotPassword({
+    email: userEmail.email,
+    name: userEmail.name,
+    token: userEmail.token,
+  });
+
+  //* Renderizar un mensaje que le diga al usuario que siga las instrucciones para resetear su password.
+  res.render("templates/message", {
+    view: "Reestablece tu password",
+    message: "Hemos enviado un email con las instrucciones",
+  });
+};
+
+//* Validar token desde la URL de "/reset-password".
+//* Identificar quién es la persona que desea modificar su password.
+const confirmTokenUser = async (req, res) => {
+  const { token } = req.params;
+
+  const userToken = await User.findOne({ where: { token } });
+  // console.log(user)
+  // * Mostramos mensaje en caso de que el token del usuario no sea válido:
+  if (!userToken) {
+    return res.render("auth/confirmAccount", {
+      view: "Reestablece tu password",
+      message: "Hubo un error al validar tu información, ¡Inténtalo de nuevo!",
+      error: true,
+    });
+  }
+
+  // * En caso de que el token del usuario sea válido, mostramos un formulario para modificar el password:
+  res.render("auth/resetPassword", {
+    view: "Reestablece tu password",
+    csrfToken: req.csrfToken(),
+  });
+};
+
+// * Almacenando el nuevo password:
+const newPasswordUser = async (req, res) => {
+  // console.log("Guardando password")
+
+  const { token } = req.params;
+  const { password } = req.body;
+
+  // * Validar el password
+  await body("password")
+    .notEmpty()
+    .withMessage("¡El campo password es obligatorio!")
+    .isLength({ min: 6, max: 16 })
+    .withMessage("¡El campo password debe tener entre 6 y 16 carácteres!")
+    .run(req);
+
+  const result = validationResult(req);
+
+  //* Verificar que el resultado esté vacío (Ese result se muestra en un arreglo, por lo que es posible iterarlo).
+  //* Si result está vacío quiere decir que no hay ningún error y se puede agregar el usuario.
+  //* Si no está vacío hay errores
+  if (!result.isEmpty()) {
+    return res.render("auth/resetPassword", {
+      view: "Reestablece tu password",
+      csrfToken: req.csrfToken(),
+      errors: result.array(),
+    });
+  }
+
+  // * Identificar el usuario que hace el cambio
+  const user = await User.findOne({ where: { token } });
+  // console.log(user)
+
+  // * Hashear el nuevo password
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(password, salt);
+  user.token = null;
+
+  await user.save();
+
+  res.render("auth/confirmAccount", {
+    view: "Password reestablecido",
+    message: "¡El password se guardó satisfactoriamente!",
+  });
+};
+
+export {
+  formLogin,
+  formRegister,
+  registerUser,
+  confirm,
+  formResetPassword,
+  resetPassword,
+  confirmTokenUser,
+  newPasswordUser,
+};
