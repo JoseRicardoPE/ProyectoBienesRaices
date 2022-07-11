@@ -11,13 +11,12 @@ const formLogin = (req, res) => {
 };
 
 const formRegister = (req, res) => {
-
   //console.log(req.csrfToken()); //* función csrfToken es exclusiva de csurf.
 
   res.render("auth/register", {
     view: "Crear cuenta",
     csrfToken: req.csrfToken(), //* Se manda el token de csurf y lo compara con la llave privada que está registrada dentro de nuestra aplicación.
-                                //* Lo debo copiar y pegar en la función de registrar usuario y confirmar email también para que no mande error.
+    //* Lo debo copiar y pegar en la función de registrar usuario y confirmar email también para que no mande error.
   });
 };
 
@@ -26,6 +25,7 @@ const registerUser = async (req, res) => {
 
   const { name, email, password } = req.body;
 
+  //* Validaciones para el formulario de registrar usuario con librería express-validator.
   await body("name")
     .notEmpty()
     .withMessage("¡El campo nombre es obligatorio!")
@@ -56,10 +56,10 @@ const registerUser = async (req, res) => {
 
   const result = validationResult(req);
 
-  //* Verificar que el resultado esté vacío (si hay errores).
+  //* Verificar que el resultado esté vacío (Ese result se muestra en un arreglo, por lo que es posible iterarlo).
   //? Si result está vacío quiere decir que no hay ningún error y se puede agregar el usuario.
+  //? Si no está vacío hay errores
   if (!result.isEmpty()) {
-    //? Si no está vacío hay errores
     return res.render("auth/register", {
       view: "crear cuenta",
       csrfToken: req.csrfToken(),
@@ -71,15 +71,15 @@ const registerUser = async (req, res) => {
     });
   }
 
-  //* Verificar que el email del usuario no esté duplicado.
-  const userExist = await User.findOne({ where: { email } });
-  if (userExist) {
+  //* Verificar que el email que el usuario está registrando no exista en la bd.
+  const userEmailExist = await User.findOne({ where: { email } });
+  if (userEmailExist) {
     return res.render("auth/register", {
       view: "crear cuenta",
       csrfToken: req.csrfToken(),
       errors: [
         {
-          msg: "La cuenta de correo que ha ingresado ya se encuentra registrada con otro usuario.",
+          msg: "La cuenta de correo que ha ingresado ya se encuentra registrada con otro usuario.", //* msg es la misma propiedad que imprime result.array();
         },
       ],
       user: {
@@ -97,17 +97,17 @@ const registerUser = async (req, res) => {
     token: generatorId(),
   });
 
-  // * Enviar email de confirmación para el usuario
-  emailRegister({
-    name: user.name,
-    email: user.email,
-    token: user.token,
-  });
-
   // * Mostrar mensaje de confirmación (Esta vista no se mostrará hasta que no se haya generado el usuario.)
   res.render("templates/message", {
     view: "Cuenta creada correctamente",
     message: "Hemos enviado un email de confirmación, ¡presiona en el enlace!",
+  });
+
+  // * Enviar email de confirmación para el usuario (Usamos librería nodemailer y para la simulación de envío de mensajes se usó mailtrap).
+  emailRegister({
+    name: user.name,
+    email: user.email,
+    token: user.token,
   });
 };
 
@@ -136,11 +136,10 @@ const confirm = async (req, res) => {
   res.render("auth/confirmAccount", {
     view: "¡Cuenta confirmada!",
     message: "¡La cuenta ha sido verificada satisfactoriamente!",
-  });  
+  });
 
   // console.log(tokenUser);
   // console.log(tokenUser.token);
-
 };
 
 const formResetPassword = (req, res) => {
