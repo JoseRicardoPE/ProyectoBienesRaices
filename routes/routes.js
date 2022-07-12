@@ -1,6 +1,7 @@
 import express from "express";
 import {
   formLogin,
+  userAuthentication,
   formRegister,
   registerUser,
   confirm,
@@ -14,6 +15,7 @@ const router = express.Router();
 
 //* Endpoints App Bienes raíces:
 router.get("/login", formLogin);
+router.post("/login", userAuthentication);
 
 router.get("/register", formRegister);
 router.post("/register", registerUser);

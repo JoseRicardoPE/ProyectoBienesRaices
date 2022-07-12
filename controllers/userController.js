@@ -2,13 +2,90 @@ import { body, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import Swal from "sweetalert2";
-import { generatorId } from "../helpers/tokens.js";
+import { generatorId, generateJWT } from "../helpers/tokens.js";
 import { emailRegister, emailForgotPassword } from "../helpers/emails.js";
 
 const formLogin = (req, res) => {
   res.render("auth/login", {
     view: "Iniciar sesión",
+    csrfToken: req.csrfToken(),
   });
+};
+
+//* Debemos verificar que el usuario exista en la bd, después verificar que el password coincida con el del usuario.o0
+const userAuthentication = async (req, res) => {
+  // console.log("autenticando...")
+
+  // * Primero validamos los campos del formulario de login:
+  await body("email")
+    .notEmpty()
+    .withMessage("El campo email es obligatorio!")
+    .isEmail()
+    .withMessage("¡Eso no parece un email!")
+    .run(req);
+
+  await body("password")
+    .notEmpty()
+    .withMessage("El campo password es obligatorio!")
+    .run(req);
+
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    return res.render("auth/login", {
+      view: "Iniciar sesión",
+      csrfToken: req.csrfToken(),
+      errors: result.array(),
+    });
+  }
+
+  // * Segundo, comprobamos si el usuario existe en la base de datos:
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    return res.render("auth/login", {
+      view: "Iniciar sesión",
+      csrfToken: req.csrfToken(),
+      errors: [
+        {
+          msg: "¡El usuario no se encuentra registrado en nuestra base de datos!",
+        },
+      ],
+    });
+  }
+
+  // * Tercero, comprobar si el usuario ha confirmado su cuenta. (Se registraron pero nunca visitaron el enlace para confirmar su cuenta de registro).
+  if (!user.confirmm) {
+    return res.render("auth/login", {
+      view: "Iniciar sesión",
+      csrfToken: req.csrfToken(),
+      errors: [
+        {
+          msg: "Este usuario se encuentra registrado en nuestra base de datos, pero nunca confirmó su cuenta de registro.",
+        },
+      ],
+    });
+  }
+
+  // * Cuarto, validación del password.
+  // * checkPassword es el prototype que declaramos en User.js, este prototype recibe un parámetro de tipo password.
+  // * Si retorna false significa que el password es incorrecto.
+  if (!user.checkPassword(password)) {
+    return res.render("auth/login", {
+      view: "Iniciar sesión",
+      csrfToken: req.csrfToken(),
+      errors: [
+        {
+          msg: "El password es incorrecto",
+        },
+      ],
+    });
+  }
+
+  // * Quinto, autenticar al usuario. (Usando JWT)
+  const token = generateJWT( { id: user.id, name: user.name} )
+  console.log(token);
 };
 
 const formRegister = (req, res) => {
@@ -296,6 +373,7 @@ const newPasswordUser = async (req, res) => {
 
 export {
   formLogin,
+  userAuthentication,
   formRegister,
   registerUser,
   confirm,
