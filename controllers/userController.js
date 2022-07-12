@@ -253,6 +253,17 @@ const newPasswordUser = async (req, res) => {
     .withMessage("¡El campo password debe tener entre 6 y 16 carácteres!")
     .run(req);
 
+  await body("confirmPassword")
+    .notEmpty()
+    .withMessage("El campo confirma tu password es obligatorio!")
+    .custom((value, { req }) => {
+      if (value !== password) {
+        throw new Error("¡Las contraseñas no coinciden!");
+      }
+      return true;
+    })
+    .run(req);
+
   const result = validationResult(req);
 
   //* Verificar que el resultado esté vacío (Ese result se muestra en un arreglo, por lo que es posible iterarlo).
