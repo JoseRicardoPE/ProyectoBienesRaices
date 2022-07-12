@@ -1,9 +1,9 @@
 import nodemailer from "nodemailer";
 
-// ? Vamos a tener dos email, uno para que el usuario confirme la cuenta.
-// ? Otro para cuando al usuario se le olvide su password.
+// * Vamos a tener dos email, uno para que el usuario confirme la cuenta.
+// * Otro para cuando al usuario se le olvide su password.
 
-//* Primero inicia sesión
+//* Primero inicia sesión (Credenciales de mailTrap), y después tiene acceso a la función de enviar un email (sendMail).
 const emailRegister = async (data) => {
   const transport = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
