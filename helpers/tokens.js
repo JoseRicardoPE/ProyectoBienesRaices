@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 const generatorId = () => Math.random().toString(32) + Date.now().toString(32);
 
+//* Generador token JWT
 const generateJWT = (data) => {
   return jwt.sign(
     {

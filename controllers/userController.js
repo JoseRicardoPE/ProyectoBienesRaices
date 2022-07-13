@@ -86,6 +86,19 @@ const userAuthentication = async (req, res) => {
   // * Quinto, autenticar al usuario. (Usando JWT)
   const token = generateJWT( { id: user.id, name: user.name} )
   console.log(token);
+  
+  // * Almacenar el token JWT en un cookie. 
+  // * Cuando habilitamos cookie parser nos da acceso en el request para poder escribir en los cookies.
+  // * En la página en la sección de cookies aparece registrado el valor para el _csrf y lo compara con el campo oculto del formulario Login, y si el valor de estas dos llaves
+  // * es confirmado con éxito se permite el request de la página donde se encuentra el formulario de login.
+  // * httpOnly: true es lo más importante, porque evita los ataques cross site. Esto hace que un cookie no sea accesible desde la API de JavaScript.
+  // * secure y sameSite requieren de un certificado SSL 
+  return res.cookie("_token", token, {
+    httpOnly: true,
+    // secure: true,
+    // sameSite: true,
+  }).redirect("/mis-propiedades");
+
 };
 
 const formRegister = (req, res) => {
