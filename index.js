@@ -1,6 +1,7 @@
 //const express = require("express"); //*commonjs module
 import express from "express"; //*ecmascript module (recommended)
-import router from "./routes/routes.js";
+import userRoutes from "./routes/userRoutes.js";
+import propertiesRoutes from "./routes/propertiesRoutes.js";
 
 import csrf from "csurf";  //*csurf es la implementación para Express.
 import cookieParser from "cookie-parser";
@@ -27,8 +28,8 @@ app.use(cookieParser());
 app.use(csrf({cookie: true}));
 
 // *Middleware de express para múltiples rutas.
-app.use("/", router);
-app.use("/auth", router);
+app.use("/auth", userRoutes);
+app.use("/", propertiesRoutes);
 
 // *Conexión con la base de datos
 try {
@@ -43,5 +44,5 @@ try {
 
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
-  console.log(`http://localhost:3002 Server listening on port ${port}`);
+  console.log(`http://localhost:3002/ Server listening on port ${port}`);
 });
