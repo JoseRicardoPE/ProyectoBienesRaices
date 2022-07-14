@@ -1,5 +1,9 @@
 extends ../layout/index
 
+//- * Acá cargamos la hoja de estilos para leaflet
+block styles 
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css")
+
 block contenido
     section.py-3
         h1.text-5xl.my-10.font-extrabold.text-center Bienes 
@@ -53,6 +57,8 @@ block contenido
                                 - let toilet = 1;
                                     while toilet <= 10 
                                         option(value=toilet) #{toilet++}
+                        
+                    #map.h-96
 
 //- leaflet es una alternativa gratis a google maps.
 //- esri-leaflet es una librería que nos permite ingresar a información de las calles cuando le pasamos ciertas coordenadas.
