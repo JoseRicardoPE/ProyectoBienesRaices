@@ -1,7 +1,6 @@
 import { body, validationResult } from "express-validator";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
-import Swal from "sweetalert2";
 import { generatorId, generateJWT } from "../helpers/tokens.js";
 import { emailRegister, emailForgotPassword } from "../helpers/emails.js";
 

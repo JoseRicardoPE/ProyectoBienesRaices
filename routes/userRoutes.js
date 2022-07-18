@@ -14,12 +14,15 @@ import {
 const router = express.Router();
 
 //* Endpoints App Bienes raíces:
+//* Endpoints para login de usuarios
 router.get("/login", formLogin);
 router.post("/login", userAuthentication);
 
+//* Endpoints para registrar un usuario nuevo
 router.get("/register", formRegister);
 router.post("/register", registerUser);
 
+//* Endpoints para confirmar una cuenta de correo
 router.get("/confirm/:token", confirm);
 
 //* Endpoint para resetear el password
