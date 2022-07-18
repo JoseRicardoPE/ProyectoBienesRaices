@@ -22,6 +22,7 @@ router.post("/register", registerUser);
 
 router.get("/confirm/:token", confirm);
 
+//* Endpoint para resetear el password
 router.get("/reset-password", formResetPassword);
 router.post("/reset-password", resetPassword);
 

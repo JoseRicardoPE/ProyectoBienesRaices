@@ -12,7 +12,7 @@ const formLogin = (req, res) => {
   });
 };
 
-//* Debemos verificar que el usuario exista en la bd, después verificar que el password coincida con el del usuario.o0
+//* Debemos verificar que el usuario exista en la bd, después verificar que el password coincida con el del usuario.
 const userAuthentication = async (req, res) => {
   // console.log("autenticando...")
 
@@ -273,7 +273,7 @@ const resetPassword = async (req, res) => {
   const userEmail = await User.findOne({ where: { email } });
   // console.log(userEmail);
 
-  //* Si el usuario no está registrado en la bd.
+  //* En caso de que el usuario no exista, renderizamos un mensaje indicando que no se encontró un usuario con esa cuenta.
   if (!userEmail) {
     return res.render("auth/forgotPassword", {
       view: "Recupera tu contraseña a Bienes Raices",
@@ -286,7 +286,7 @@ const resetPassword = async (req, res) => {
     });
   }
 
-  //* Generar un token y enviar el email para que el usuario pueda cambiar la contraseña.
+  //* Generar un nuevo token y enviar el email para que el usuario pueda cambiar la contraseña.
   userEmail.token = generatorId();
   await userEmail.save();
 
@@ -321,8 +321,8 @@ const confirmTokenUser = async (req, res) => {
     });
   }
 
-  // * En caso de que el token del usuario sea válido, mostramos un formulario para modificar el password:
-  res.render("auth/resetPassword", {
+  // * En caso de que el token del usuario sí sea válido, mostramos un formulario para modificar el password:
+  res.render("auth/newPassword", {
     view: "Reestablece tu password",
     csrfToken: req.csrfToken(),
   });
@@ -360,22 +360,21 @@ const newPasswordUser = async (req, res) => {
   //* Si result está vacío quiere decir que no hay ningún error y se puede agregar el usuario.
   //* Si no está vacío hay errores
   if (!result.isEmpty()) {
-    return res.render("auth/resetPassword", {
+    return res.render("auth/newPassword", {
       view: "Reestablece tu password",
       csrfToken: req.csrfToken(),
       errors: result.array(),
     });
   }
 
-  // * Identificar el usuario que hace el cambio
+  // * Identificar el usuario que hace el cambio de passwod.
   const user = await User.findOne({ where: { token } });
   // console.log(user)
 
-  // * Hashear el nuevo password
+  // * Hashear el nuevo password. (El que fue ingresado en el formulario).
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(password, salt);
-  user.token = null;
-
+  user.token = null; //* elminamos el token
   await user.save();
 
   res.render("auth/confirmAccount", {
