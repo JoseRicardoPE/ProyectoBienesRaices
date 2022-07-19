@@ -44,5 +44,5 @@ try {
 
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
-  console.log(`http://localhost:3002/ Server listening on port ${port}`);
+  console.log(`http://localhost:3002/auth/login/ Server listening on port ${port}`);
 });

@@ -12,6 +12,7 @@ block contenido
 
         div(class="bg-white shadow py-8 px-4 rounded mx-auto max-w-4xl my-10 md:px-10")
 
+            //-*space-y-8 separa el contenido del formulario y no usar margin-top/bottom en cada contenedor hijo.
             form(action="").space-y-8
                 div.space-y-5
                     h3.text-lg.font-semibold.text-gray-900 Información General
@@ -22,6 +23,7 @@ block contenido
                         input#title.w-full.p-3.border.border-gray-300.rounded-md.placeholder-gray-300(placeholder="Título de tu propiedad, ej. Casa en la playa."
                         type="text" name="title")
                     
+                    //- * md es media query en tamaño mediano
                     div(class="md:flex md:gap-4 space-y-5 md:space-y-0")
                         div(class="md:w-1/2")
                             label.block.text-base.text-gray-400.mb-2.font-bold(for="category") Categoría   
@@ -60,8 +62,9 @@ block contenido
                         
                     #map.h-96
 
-//- leaflet es una alternativa gratis a google maps.
-//- esri-leaflet es una librería que nos permite ingresar a información de las calles cuando le pasamos ciertas coordenadas.
+//- * leaflet es una alternativa gratis a google maps.
+//- * esri-leaflet es una librería que nos permite ingresar a información de las calles cuando le pasamos ciertas coordenadas.
+//- * esri-leaflet-geocoder y leaflet-geosearch hacen lo mismo que esri-leaflet.
 block scripts 
     script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")
     script(src="https://unpkg.com/esri-leaflet@3.0.8/dist/esri-leaflet.js")
@@ -69,4 +72,8 @@ block scripts
     script(src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-geosearch/2.7.0/bundle.min.js")
     script(src="/js/map.js")           
 
+//- * Instalar y configurar webpack - Toma los archivos de JS y los compila en archivos estáticos.
+//- * npm i -D webpack webpack-cli
+//- * crear webpack.config.js
+//- * crear src, dentro js y acá irá el mapa
         
