@@ -9,6 +9,9 @@ import cookieParser from "cookie-parser";
 // *Mando llamar la base de datos
 import db from "./config/db.js";
 
+// *Mando llamar el seeder
+import seeder from "./seeders/seeder.js";
+
 const app = express();
 
 // *Habilitar pug
@@ -30,6 +33,8 @@ app.use(csrf({cookie: true}));
 // *Middleware de express para múltiples rutas.
 app.use("/auth", userRoutes);
 app.use("/", propertiesRoutes);
+
+// seeder();
 
 // *Conexión con la base de datos
 try {
