@@ -15,6 +15,10 @@ const Property = db.define("properties", {
   description: {
     type: DataTypes.TEXT,
   },
+  estrata: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   rooms: {
     type: DataTypes.INTEGER,
     allowNull: false,

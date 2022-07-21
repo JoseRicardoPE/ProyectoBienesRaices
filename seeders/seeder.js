@@ -1,8 +1,7 @@
 import db from "../config/db.js";
-import Category from "../models/Category.js";
 import categories from "./categorySeeder.js";
-import Price from "../models/Price.js";
 import prices from "./priceSeeder.js";
+import { Category, Price } from "../models/index.js"
 
 const importData = async () => {
   try {
