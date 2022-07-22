@@ -23,6 +23,7 @@ const create = async (req, res) => {
     bar: true,
     categories,
     prices,
+    data: {},
   });
 };
 
@@ -42,7 +43,8 @@ const save = async (req, res) => {
       bar: true,
       categories,
       prices,
-      errors: result.array()
+      errors: result.array(),
+      data: req.body,
     });
   }
 };
