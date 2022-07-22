@@ -1,7 +1,7 @@
 // * Código requerido para mostrar un mapa. (Extraído de la documentación de leaflet).
 (function () {
-  const lat = 4.7519661;
-  const lng = -74.091696;
+  const lat = document.querySelector("#lat").value || 4.7519661;
+  const lng = document.querySelector("#lng").value || -74.091696;
   const map = L.map("map").setView([lat, lng], 15);
   let marker = "";
 

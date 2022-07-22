@@ -29,7 +29,7 @@ const create = async (req, res) => {
 
 const save = async (req, res) => {
   //* Acá muestro la validación que se hizo en el routing
-  const result = validationResult(req);
+  let result = validationResult(req);
 
   if (!result.isEmpty()) {
     const [categories, prices] = await Promise.all([
@@ -47,6 +47,11 @@ const save = async (req, res) => {
       data: req.body,
     });
   }
+
+  // * En caso de que no haya errores y la validación sea satisfactoria, creamos el registro.
+  console.log(req.body);
+
+
 };
 
 export { admin, create, save };

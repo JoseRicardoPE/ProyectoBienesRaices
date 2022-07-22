@@ -58,9 +58,9 @@ block contenido
                             label.block.text-base.text-gray-400.mb-2.font-bold(for="strata") Estrato   
                             select#strata.w-full.p-3.border.border-gray-300.rounded-md(name="strata")
                                 option(value="") - Seleccione -
-                                - let strata = 1;
-                                    while strata <= 6 
-                                        option(value=strata) #{strata++}
+                                - let stratum = 1;
+                                    while stratum <= 6 
+                                       option(value=stratum selected= data.strata ? data.strata === stratum ? true : false : null) #{stratum++}
                     
                     div(class="md:flex md:gap-4 space-y-5 md:space-y-0")
                         div(class="md:w-1/3")
@@ -69,23 +69,23 @@ block contenido
                                 option(value="") - Seleccione -
                                 - let room = 1;
                                     while room <= 10 
-                                        option(value=room) #{room++}
+                                        option(value=room selected= data.rooms ? data.rooms === room ? true : false : null) #{room++}
 
                         div(class="md:w-1/3")
                             label.block.text-base.text-gray-400.mb-2.font-bold(for="parking") Estacionamiento   
                             select#parking.w-full.p-3.border.border-gray-300.rounded-md(name="parking")
                                 option(value="") - Seleccione -
-                                - let parking = 1;
-                                    while parking <= 10 
-                                        option(value=parking) #{parking++}
+                                - let carPark = 1;
+                                    while carPark <= 10 
+                                        option(value=carPark selected= data.parking ? data.parking === carPark ? true : false : null) #{carPark++}
                         
                         div(class="md:w-1/3")
                             label.block.text-base.text-gray-400.mb-2.font-bold(for="toilet") Baños
                             select#toilet.w-full.p-3.border.border-gray-300.rounded-md(name="toilet")
                                 option(value="") - Seleccione -
-                                - let toilet = 1;
-                                    while toilet <= 10 
-                                        option(value=toilet) #{toilet++}
+                                - let baths = 1;
+                                    while baths <= 10 
+                                        option(value=baths selected= data.toilet ? data.toilet === baths ? true : false : null) #{baths++}
 
                 div.space-y-5
                     h3.text-lg.font-semibold.text-gray-900 Ubicación
@@ -93,11 +93,11 @@ block contenido
                     #map.h-96
 
                     div
-                        p.street
+                        p.street= data.street ? data.street : ""
 
-                    input(type="hidden" name="street" id="street")
-                    input(type="hidden" name="lat" id="lat")
-                    input(type="hidden" name="lng" id="lng")
+                    input(type="hidden" name="street" id="street" value= data.street ? data.street : "")
+                    input(type="hidden" name="lat" id="lat" value= data.lat ? data.lat : "")
+                    input(type="hidden" name="lng" id="lng" value= data.lng ? data.lng : "")
                 
                 input(class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white font-bold uppercase cursor-pointer" type="submit" value="Add Image")
 
