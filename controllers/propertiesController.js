@@ -1,6 +1,5 @@
 import { validationResult } from "express-validator";
-import Category from "../models/Category.js";
-import Price from "../models/Price.js";
+import { Price, Category, Property } from "../models/index.js";
 
 const admin = (req, res) => {
   res.render("properties/admin", {
@@ -49,7 +48,25 @@ const save = async (req, res) => {
   }
 
   // * En caso de que no haya errores y la validación sea satisfactoria, creamos el registro.
-  console.log(req.body);
+  // console.log(req.body);
+  const { title, description, strata, rooms, parking, toilet, street, lat, lng, price: priceId, category: categoryId } = req.body;
+  try {
+    const propertySave = await Property.create({
+      title,
+      description,
+      strata,
+      rooms,
+      parking,
+      toilet,
+      street,
+      lat,
+      lng,
+      priceId,
+      categoryId,
+    }) 
+  } catch (error) {
+    
+  }
 
 
 };

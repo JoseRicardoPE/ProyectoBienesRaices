@@ -16,7 +16,7 @@ router.post("/properties/create",
   body("rooms").isNumeric().withMessage("¡Debes seleccionar la cantidad de habitaciones antes de continuar!"),
   body("parking").isNumeric().withMessage("¡Debes seleccionar la cantidad de parqueaderos antes de continuar!"),
   body("toilet").isNumeric().withMessage("¡Debes seleccionar la cantidad de baños antes de continuar!"),
-  body("lat").notEmpty().withMessage("¡Debes indicar la ubicación de tu propiedad en el mapa antes de continuar!"),
+  // body("lat").notEmpty().withMessage("¡Debes indicar la ubicación de tu propiedad en el mapa antes de continuar!"),
   save
 );
 
