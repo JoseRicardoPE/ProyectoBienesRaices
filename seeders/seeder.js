@@ -1,7 +1,8 @@
 import db from "../config/db.js";
 import categories from "./categorySeeder.js";
 import prices from "./priceSeeder.js";
-import { Category, Price } from "../models/index.js"
+import users from "./userSeeder.js";
+import { Category, Price, User } from "../models/index.js"
 
 const importData = async () => {
   try {
@@ -15,6 +16,7 @@ const importData = async () => {
     //* bulkCreate inserta todos los datos
     await Category.bulkCreate(categories);
     await Price.bulkCreate(prices);
+    await User.bulkCreate(users);
     console.log("¡Data imported successfully!");
     process.exit(0);
   } catch (error) {

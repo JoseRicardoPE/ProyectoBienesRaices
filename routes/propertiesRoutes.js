@@ -1,11 +1,12 @@
 import { body } from "express-validator";
 import express from "express";
 import { admin, create, save } from "../controllers/propertiesController.js";
+import protectedRoute from "../middlewares/protectedRoute.js";
 
 const router = express.Router();
 
 //* Endpoints para usuarios logueados con éxito
-router.get("/properties", admin);
+router.get("/properties", protectedRoute, admin);
 router.get("/properties/create", create);
 router.post("/properties/create",
   body("title").notEmpty().withMessage("¡El campo título es obligatorio!"),
