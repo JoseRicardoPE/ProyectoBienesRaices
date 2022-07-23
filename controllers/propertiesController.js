@@ -50,6 +50,10 @@ const save = async (req, res) => {
   // * En caso de que no haya errores y la validación sea satisfactoria, creamos el registro.
   // console.log(req.body);
   const { title, description, strata, rooms, parking, toilet, street, lat, lng, price: priceId, category: categoryId } = req.body;
+
+  // console.log(req.user.id);
+  const { id: userId} = req.user;
+
   try {
     const propertySave = await Property.create({
       title,
@@ -61,11 +65,17 @@ const save = async (req, res) => {
       street,
       lat,
       lng,
+      image: "",
       priceId,
       categoryId,
+      userId
     }) 
+
+    const { id } = propertySave;
+    res.redirect(`/properties/add-image/${id}`);
+
   } catch (error) {
-    
+    console.log(error);
   }
 
 
