@@ -7,8 +7,8 @@ const router = express.Router();
 
 //* Endpoints para usuarios logueados con éxito
 router.get("/properties", protectedRoute, admin);
-router.get("/properties/create", create);
-router.post("/properties/create",
+router.get("/properties/create", protectedRoute, create);
+router.post("/properties/create", protectedRoute,
   body("title").notEmpty().withMessage("¡El campo título es obligatorio!"),
   body("description").notEmpty().withMessage("¡El campo descripción es obligatorio!").isLength({max:300}).withMessage("¡La descripción debe tener máximo 300 carácteres!"),
   body("category").isNumeric().withMessage("¡Debes seleccionar una categoría antes de continuar!"),
