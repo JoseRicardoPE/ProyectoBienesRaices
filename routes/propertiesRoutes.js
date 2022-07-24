@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import express from "express";
-import { admin, create, save } from "../controllers/propertiesController.js";
+import { admin, create, save, addImage } from "../controllers/propertiesController.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 
 const router = express.Router();
@@ -20,6 +20,8 @@ router.post("/properties/create", protectedRoute,
   // body("lat").notEmpty().withMessage("¡Debes indicar la ubicación de tu propiedad en el mapa antes de continuar!"),
   save
 );
+
+router.get("/properties/add-image/:id", addImage);
 
 export default router;
 

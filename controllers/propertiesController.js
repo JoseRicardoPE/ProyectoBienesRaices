@@ -4,7 +4,6 @@ import { Price, Category, Property } from "../models/index.js";
 const admin = (req, res) => {
   res.render("properties/admin", {
     view: "Mis Propiedades",
-    bar: true,
   });
 };
 
@@ -19,7 +18,6 @@ const create = async (req, res) => {
   res.render("properties/create", {
     view: "Crear propiedad",
     csrfToken: req.csrfToken(),
-    bar: true,
     categories,
     prices,
     data: {},
@@ -39,7 +37,6 @@ const save = async (req, res) => {
     return res.render("properties/create", {
       view: "Crear propiedad",
       csrfToken: req.csrfToken(),
-      bar: true,
       categories,
       prices,
       errors: result.array(),
@@ -47,7 +44,7 @@ const save = async (req, res) => {
     });
   }
 
-  // * En caso de que no haya errores y la validación sea satisfactoria, creamos el registro.
+  // * En caso de que no haya errores y la validación sea satisfactoria, creamos el registro en la base de datos.
   // console.log(req.body);
   const { title, description, strata, rooms, parking, toilet, street, lat, lng, price: priceId, category: categoryId } = req.body;
 
@@ -81,4 +78,10 @@ const save = async (req, res) => {
 
 };
 
-export { admin, create, save };
+const addImage = async (req, res) => {
+  res.render("properties/addImage", {
+    view: "Agregar imágen"
+  });
+};
+
+export { admin, create, save, addImage };

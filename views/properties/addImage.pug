@@ -1,0 +1,22 @@
+extends ../layout/admin
+
+//- * Acá cargamos la hoja de estilos para leaflet
+block styles 
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css")
+
+block contenido
+    section.py-3
+        h1.text-5xl.my-10.font-extrabold.text-center Bienes 
+            span.font-normal Raíces
+        h2.text-center.text-4xl.font-extrabold= view 
+
+        div(class="bg-white shadow py-8 px-4 rounded mx-auto max-w-4xl my-10 md:px-10")
+
+            //-*space-y-8 separa el contenido del formulario y no usar margin-top/bottom en cada contenedor hijo.
+            form(method="POST" action="/properties/create").space-y-8
+                input(type="hidden" name="_csrf" value=csrfToken)
+                
+                input(class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white font-bold uppercase cursor-pointer" type="submit" value="Publicar Propiedad")
+
+block scripts 
+    
