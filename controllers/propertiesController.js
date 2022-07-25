@@ -79,6 +79,23 @@ const save = async (req, res) => {
 };
 
 const addImage = async (req, res) => {
+
+  const { id } = req.params;
+
+  //* Validar que la propiedad exista.
+  const property = await Property.findByPk(id);
+
+  if(!property) {
+    return res.redirect("/properties")
+  }
+
+  //* Validar que la propiedad no esté publicada.
+
+
+  //* Validar que la propiedad pertenece a quién visita esta página
+
+
+
   res.render("properties/addImage", {
     view: "Agregar imágen"
   });
