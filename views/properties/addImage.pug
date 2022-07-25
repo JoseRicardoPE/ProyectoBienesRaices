@@ -2,6 +2,7 @@ extends ../layout/admin
 
 block styles 
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css")
+    meta(name="csrf-token" content= csrfToken)
 
 block contenido
     section.py-3
@@ -13,7 +14,7 @@ block contenido
 
             //-*space-y-8 separa el contenido del formulario y no usar margin-top/bottom en cada contenedor hijo.
             //-*Este formulario lo usa dropzone para agregar las imágenes, es necesario agregar la clase dropzone para que lo reconozca.
-            form(class="dropzone border-dashed border-2 w-full min:h-96 h-auto rounded grid place-content-center text-center" method="POST" action="/properties/create").space-y-8
+            form(id="image" class="dropzone border-dashed border-2 w-full min:h-96 h-auto rounded grid place-content-center text-center" method="POST" action=`/properties/add-image/${property.id}`)
                 input(type="hidden" name="_csrf" value=csrfToken)
                 
             input(class="mt-8 w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-md text-white font-bold uppercase cursor-pointer" type="submit" value="Publicar Propiedad")

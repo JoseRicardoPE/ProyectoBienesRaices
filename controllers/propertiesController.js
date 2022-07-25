@@ -112,13 +112,19 @@ const addImage = async (req, res) => {
   // console.log(typeof req.user.id.toString());
   // console.log(typeof property.userId.toString());
 
-  if(req.user.id.toString() !== property.userId.toString()){
+  if (req.user.id.toString() !== property.userId.toString()) {
     return res.redirect("/properties");
   }
 
   res.render("properties/addImage", {
-    view: "Agregar imágen",
+    view: `Agregar imágen de ${property.title}`,
+    csrfToken: req.csrfToken(),
+    property,
   });
 };
 
-export { admin, create, save, addImage };
+const postAddImage = async (req, res) => {
+  console.log("Subiendo imágen...");
+};
+
+export { admin, create, save, addImage, postAddImage };

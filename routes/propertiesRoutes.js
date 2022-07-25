@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import express from "express";
-import { admin, create, save, addImage } from "../controllers/propertiesController.js";
+import { admin, create, save, addImage, postAddImage } from "../controllers/propertiesController.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 
 const router = express.Router();
@@ -22,6 +22,7 @@ router.post("/properties/create", protectedRoute,
 );
 
 router.get("/properties/add-image/:id", protectedRoute, addImage);
+router.post("/properties/add-image/:id", protectedRoute, postAddImage);
 
 export default router;
 
