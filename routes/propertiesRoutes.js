@@ -21,7 +21,7 @@ router.post("/properties/create", protectedRoute,
   save
 );
 
-router.get("/properties/add-image/:id", addImage);
+router.get("/properties/add-image/:id", protectedRoute, addImage);
 
 export default router;
 
