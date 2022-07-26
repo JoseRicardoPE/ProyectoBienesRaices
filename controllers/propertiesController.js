@@ -124,7 +124,48 @@ const addImage = async (req, res) => {
 };
 
 const postAddImage = async (req, res) => {
-  console.log("Subiendo imágen...");
+  // console.log("Subiendo imágen...");
+  const { id } = req.params;
+
+  //* Validar que la propiedad exista.
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/properties");
+  }
+
+  //* Validar que la propiedad no esté publicada.
+  //* Si está en 0 no ha sido publicada, 1 ya fue publicada, entonces retorna a /properties
+  if (property.posted) {
+    return res.redirect("/properties");
+  }
+
+  //* Validar que la propiedad publicada pertenece a quién visita esta página
+  if (req.user.id.toString() !== property.userId.toString()) {
+    return res.redirect("/properties");
+  }
+
+  //* Leer el archivo, para pasarlo al campo correspondiente de la base de datos (image) y 
+  //* cambiar el estado de publicado de 0 a 1 (posted)
+  try {
+    
+    //* Almacenar la imagen y publicar propiedad
+    //* re.file lo registra multer
+    //* para ver las propiedades de console debería pasar a autoProcessQueue: true
+    console.log(req.file);
+
+    property.image = req.file.filename
+
+    property.posted = 1
+
+    await property.save();
+
+
+  } catch (error) {
+    console.log(error)
+  }
+
+
 };
 
 export { admin, create, save, addImage, postAddImage };

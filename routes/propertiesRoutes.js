@@ -23,7 +23,7 @@ router.post("/properties/create", protectedRoute,
 );
 
 router.get("/properties/add-image/:id", protectedRoute, addImage);
-router.post("/properties/add-image/:id", uploadFile.array("images"), postAddImage);
+router.post("/properties/add-image/:id", protectedRoute, uploadFile.array("images"), postAddImage);
 
 export default router;
 
