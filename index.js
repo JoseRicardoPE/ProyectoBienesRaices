@@ -21,7 +21,8 @@ app.set("views", "./views");
 // *Encontrar archivos estáticos (public)
 app.use(express.static("public"));
 
-// *Habilitar lectura de datos de formularios
+// *Habilitar lectura de datos de formularios, para subir archivos se debe instalar
+//* la dependencia multer
 app.use(express.urlencoded({ extended: true })); //!si tiene bodyParser en vez de express, es solo cambiarlo
 
 // *Habilitar cookieParser (Lo requiere csurf para funcionar correctamente).
