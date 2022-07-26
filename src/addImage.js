@@ -27,6 +27,14 @@ Dropzone.options.image = {
     headers: {
         "csrf-token": token,
     },
-    paramName: "images", 
+    paramName: "image", 
+    init: function(){
+        const dropzone = this;
+        const btnPost = document.querySelector("#post");
+
+        btnPost.addEventListener("click", function(){
+            dropzone.processQueue();
+        });
+    }
 }
 
