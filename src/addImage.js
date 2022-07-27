@@ -18,12 +18,12 @@ Dropzone.options.image = {
     dictDefaultMessage: "¡Sube tus imágenes aquí!",
     acceptedFiles: ".png, .jpg, .jpeg, .gif",
     maxFilesize: 10,
-    maxFiles: 10,
-    parallelUploads: 10, 
+    maxFiles: 5,
+    parallelUploads: 5, 
     autoProcessQueue: false,
     addRemoveLinks: true,
     dictRemoveFile: "¡Eliminar imágen!",
-    dictMaxFilesExceeded: "¡La cantidad de archivos que puedes subir es de 10!",
+    dictMaxFilesExceeded: "¡La cantidad de archivos que puedes subir es de 5!",
     headers: {
         "csrf-token": token,
     },
@@ -35,6 +35,13 @@ Dropzone.options.image = {
         btnPost.addEventListener("click", function(){
             dropzone.processQueue();
         });
+
+        //* Para re-direccionar a mis propiedades
+        dropzone.on("queuecomplete", (file, message) => {
+            if(dropzone.getActiveFiles().length === 0) {
+                window.location.href = "/properties"
+            }
+        })
     }
 }
 

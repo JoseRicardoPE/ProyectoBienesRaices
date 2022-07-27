@@ -150,7 +150,7 @@ const postAddImage = async (req, res) => {
   try {
     
     //* Almacenar la imagen y publicar propiedad
-    //* re.file lo registra multer
+    //* req.file (para un archivo) req.files (para multiples archivos) lo registra multer
     //* para ver las propiedades de console debería pasar a autoProcessQueue: true
     console.log(req.file);
 
@@ -159,7 +159,8 @@ const postAddImage = async (req, res) => {
     property.posted = 1
 
     await property.save();
-
+    
+    res.redirect("/properties")
 
   } catch (error) {
     console.log(error)

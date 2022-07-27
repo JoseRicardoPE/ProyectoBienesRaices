@@ -23,9 +23,11 @@ router.post("/properties/create", protectedRoute,
 );
 
 router.get("/properties/add-image/:id", protectedRoute, addImage);
-router.post("/properties/add-image/:id", protectedRoute, uploadFile.array("image"), postAddImage);
+router.post("/properties/add-image/:id", protectedRoute, uploadFile, postAddImage);
 
 export default router;
 
 //* La librería de express-validator soporta validación del lado del routing como del controller
 //* Pero los mensajes de error se muestran en el controller 
+//* .array("image"), ese campo lo debemos llamar igual tanto en el servidor como en el archivo de JS addImage.js para que 
+//* se conecten y suba ahí la imagen. (paramName: "image")

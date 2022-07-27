@@ -19,10 +19,10 @@ const storage = multer.diskStorage({
     cb(null, "./public/uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, generatorId(), path.extname(file.originalname));
+    cb(null, generatorId() + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage }).single("image");
 
 export default upload;
