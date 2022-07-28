@@ -7,3 +7,6 @@ block contenido
         h2.text-center.text-4xl.font-extrabold= view 
 
         a(href="/properties/create" class="bg-indigo-600 my-6 px-6 py-2 rounded text-white font-bold text-center hover:bg-indigo-700 inline-block w-full sm:w-auto") Publicar Propiedad
+
+        //- * stringify convierte un arreglo en texto plano, el 2 lo ordena. Sirve para probar información cuando se pasa de un controlador a una vista.
+        pre= JSON.stringify(properties, undefined, 2)
