@@ -7,7 +7,11 @@ const admin = async (req, res) => {
   // console.log(id);
 
   const properties = await Property.findAll({
-    where: { userId: id }
+    where: { userId: id },
+    include: [
+      { model: Category, },
+      { model: Price, },
+    ]
   }) 
 
   res.render("properties/admin", {
