@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import express from "express";
-import { admin, create, save, addImage, postAddImage, edit, saveChanges } from "../controllers/propertiesController.js";
+import { admin, create, save, addImage, postAddImage, edit, saveChanges, deletePost } from "../controllers/propertiesController.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 import uploadFile from "../middlewares/uploadFiles.js";
 
@@ -38,6 +38,8 @@ router.post("/properties/edit/:id", protectedRoute,
   // body("lat").notEmpty().withMessage("¡Debes indicar la ubicación de tu propiedad en el mapa antes de continuar!"),
   saveChanges
 );
+
+router.post("/properties/delete/:id", protectedRoute, deletePost);
 
 export default router;
 

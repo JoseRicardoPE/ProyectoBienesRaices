@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import { Price, Category, Property } from "../models/index.js";
+import { unlink } from "node:fs/promises";
 
 const admin = async (req, res) => {
   const { id } = req.user;
@@ -12,6 +13,7 @@ const admin = async (req, res) => {
 
   res.render("properties/admin", {
     view: "Mis Propiedades",
+    csrfToken: req.csrfToken(),
     properties,
   });
 };
@@ -279,4 +281,32 @@ const saveChanges = async (req, res, next) => {
   }
 };
 
-export { admin, create, save, addImage, postAddImage, edit, saveChanges };
+const deletePost = async (req, res) => {
+  // console.log("eliminando")
+  const { id } = req.params;
+
+  // * Validar que la propiedad exista.
+  const property = await Property.findByPk(id);
+
+  //* En caso de que no haya una propiedad
+  if (!property) {
+    return res.redirect("/properties");
+  }
+
+  // * Revisar que quien visita la URL, es quien creó la propiedad.
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/properties");
+  }
+
+  // * Eliminar la propiedad
+  await property.destroy();
+  res.redirect("/properties");
+
+  // * Eliminar la imagen asociada a esa propiedad. (Porque de lo contrario se nos llena nuestro disco duro de imagenes que ya no están siendo utilizadas).
+  // * Debemos importar una propiedad de Node.js que se llama unlink. (Desde la versión 11 de Node está disponible.)
+  await unlink(`public/uploads/${property.image}`)
+  console.log(`Se eliminó la imagen ${property.image}`)
+
+};
+
+export { admin, create, save, addImage, postAddImage, edit, saveChanges, deletePost };
