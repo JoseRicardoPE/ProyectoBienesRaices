@@ -175,18 +175,18 @@ const postAddImage = async (req, res) => {
 };
 
 const edit = async (req, res) => {
-
   const { id } = req.params;
 
   // * Validar que la propiedad exista.
   const property = await Property.findByPk(id);
 
-  if(!property) {
+  //* En caso de que no haya una propiedad
+  if (!property) {
     return res.redirect("/properties");
   }
 
   // * Revisar que quien visita la URL, es quien creó la propiedad.
-  if(property.userId.toString() !== req.user.id.toString()) {
+  if (property.userId.toString() !== req.user.id.toString()) {
     return res.redirect("/properties");
   }
 
@@ -196,13 +196,87 @@ const edit = async (req, res) => {
     Price.findAll(),
   ]);
 
-  res.render("properties/create", {
-    view: "Editar propiedad",
+  res.render("properties/edit", {
+    view: `Editar propiedad: ${property.title}`,
     csrfToken: req.csrfToken(),
     categories,
     prices,
-    data: {},
+    data: property, //* Le paso property y así puedo autollenar los campos del formulario de la vista edit.pug  Data es una instancia de lo que hay en la base de datos y lo uso en las view
   });
 };
 
-export { admin, create, save, addImage, postAddImage, edit };
+const saveChanges = async (req, res, next) => {
+  //* Acá muestro la validación que se hizo en el routing
+  //* Verificar la validación
+  let result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    const [categories, prices] = await Promise.all([
+      Category.findAll(),
+      Price.findAll(),
+    ]);
+
+    return res.render("properties/edit", {
+      view: "Editar propiedad",
+      csrfToken: req.csrfToken(),
+      categories,
+      prices,
+      errors: result.array(),
+      data: req.body, //* Se le pasa req.body porque es la última copia que se está actualizando, y esa es la que tiene el req.body
+    });
+  }
+
+  // * Validar que la propiedad exista.
+  const { id } = req.params;
+  const property = await Property.findByPk(id);
+
+  if (!property) {
+    return res.redirect("/properties");
+  }
+
+  // * Revisar que quien visita la URL, es quien creó la propiedad.
+  if (property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/properties");
+  }
+
+  // * Reescribir el objeto y actualizarlo en la base de datos
+  try {
+    // console.log(property);
+    const {
+      title,
+      description,
+      strata,
+      rooms,
+      parking,
+      toilet,
+      street,
+      lat,
+      lng,
+      price: priceId,
+      category: categoryId,
+    } = req.body;
+
+    property.set({
+      title,
+      description,
+      strata,
+      rooms,
+      parking,
+      toilet,
+      street,
+      lat,
+      lng,
+      priceId,
+      categoryId,
+    });
+
+    // * Esto se va a setear en un objeto que se queda en memoria un rato, va a tener esta información, pero debemos almacenarlo en la base de datos.
+    await property.save();
+
+    res.redirect("/properties");
+  } catch (error) {
+    console.log(error); //* Para debugear errores
+  }
+};
+
+export { admin, create, save, addImage, postAddImage, edit, saveChanges };
