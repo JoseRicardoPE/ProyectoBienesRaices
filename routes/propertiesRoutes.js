@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import express from "express";
-import { admin, create, save, addImage, postAddImage } from "../controllers/propertiesController.js";
+import { admin, create, save, addImage, postAddImage, edit } from "../controllers/propertiesController.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 import uploadFile from "../middlewares/uploadFiles.js";
 
@@ -24,6 +24,8 @@ router.post("/properties/create", protectedRoute,
 
 router.get("/properties/add-image/:id", protectedRoute, addImage);
 router.post("/properties/add-image/:id", protectedRoute, uploadFile, postAddImage);
+
+router.get("/properties/edit/:id", protectedRoute, edit);
 
 export default router;
 

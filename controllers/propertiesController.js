@@ -2,20 +2,17 @@ import { validationResult } from "express-validator";
 import { Price, Category, Property } from "../models/index.js";
 
 const admin = async (req, res) => {
-
   const { id } = req.user;
   // console.log(id);
 
   const properties = await Property.findAll({
     where: { userId: id },
-    include: [
-      { model: Category, },
-      { model: Price, },
-    ]
-  }) 
+    include: [{ model: Category }, { model: Price }],
+  });
 
   res.render("properties/admin", {
-    view: "Mis Propiedades", properties
+    view: "Mis Propiedades",
+    properties,
   });
 };
 
@@ -157,28 +154,40 @@ const postAddImage = async (req, res) => {
     return res.redirect("/properties");
   }
 
-  //* Leer el archivo, para pasarlo al campo correspondiente de la base de datos (image) y 
+  //* Leer el archivo, para pasarlo al campo correspondiente de la base de datos (image) y
   //* cambiar el estado de publicado de 0 a 1 (posted)
   try {
-    
     //* Almacenar la imagen y publicar propiedad
     //* req.file (para un archivo) req.files (para multiples archivos) lo registra multer
     //* para ver las propiedades de console debería pasar a autoProcessQueue: true
     console.log(req.file);
 
-    property.image = req.file.filename
+    property.image = req.file.filename;
 
-    property.posted = 1
+    property.posted = 1;
 
     await property.save();
-    
-    res.redirect("/properties")
 
+    res.redirect("/properties");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-
-
 };
 
-export { admin, create, save, addImage, postAddImage };
+const edit = async (req, res) => {
+  // * Consultar modelo de Price y Category
+  const [categories, prices] = await Promise.all([
+    Category.findAll(),
+    Price.findAll(),
+  ]);
+
+  res.render("properties/create", {
+    view: "Editar propiedad",
+    csrfToken: req.csrfToken(),
+    categories,
+    prices,
+    data: {},
+  });
+};
+
+export { admin, create, save, addImage, postAddImage, edit };
