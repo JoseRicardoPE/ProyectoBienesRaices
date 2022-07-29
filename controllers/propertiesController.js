@@ -175,6 +175,21 @@ const postAddImage = async (req, res) => {
 };
 
 const edit = async (req, res) => {
+
+  const { id } = req.params;
+
+  // * Validar que la propiedad exista.
+  const property = await Property.findByPk(id);
+
+  if(!property) {
+    return res.redirect("/properties");
+  }
+
+  // * Revisar que quien visita la URL, es quien creó la propiedad.
+  if(property.userId.toString() !== req.user.id.toString()) {
+    return res.redirect("/properties");
+  }
+
   // * Consultar modelo de Price y Category
   const [categories, prices] = await Promise.all([
     Category.findAll(),
