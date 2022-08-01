@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import express from "express";
-import { admin, create, save, addImage, postAddImage, edit, saveChanges, deletePost } from "../controllers/propertiesController.js";
+import { admin, create, save, addImage, postAddImage, edit, saveChanges, deletePost, showProperty } from "../controllers/propertiesController.js";
 import protectedRoute from "../middlewares/protectedRoute.js";
 import uploadFile from "../middlewares/uploadFiles.js";
 
@@ -40,6 +40,9 @@ router.post("/properties/edit/:id", protectedRoute,
 );
 
 router.post("/properties/delete/:id", protectedRoute, deletePost);
+
+//* Área pública (Usuarios sin registrar).
+router.get("/property/:id", showProperty)
 
 export default router;
 

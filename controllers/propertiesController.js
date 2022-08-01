@@ -304,9 +304,26 @@ const deletePost = async (req, res) => {
 
   // * Eliminar la imagen asociada a esa propiedad. (Porque de lo contrario se nos llena nuestro disco duro de imagenes que ya no están siendo utilizadas).
   // * Debemos importar una propiedad de Node.js que se llama unlink. (Desde la versión 11 de Node está disponible.)
-  await unlink(`public/uploads/${property.image}`)
-  console.log(`Se eliminó la imagen ${property.image}`)
-
+  await unlink(`public/uploads/${property.image}`);
+  console.log(`Se eliminó la imagen ${property.image}`);
 };
 
-export { admin, create, save, addImage, postAddImage, edit, saveChanges, deletePost };
+// * Muestra una propiedad para usuarios no registrados. Es pública
+const showProperty = async (req, res) => {
+  // res.send("mostrando...")
+  res.render("properties/showProperties", {
+
+  })
+};
+
+export {
+  admin,
+  create,
+  save,
+  addImage,
+  postAddImage,
+  edit,
+  saveChanges,
+  deletePost,
+  showProperty,
+};

@@ -23,7 +23,7 @@ block contenido
                                     img(class="w-full block" src=`uploads/${property.image}`)
                                 
                                 div(class="sm:w-2/4 md:w-3/6 lg:w-4/6 space-y-2")
-                                    a(class="block text-2xl font-extrabold text-gray-900 truncate" href="#")= property.title
+                                    a(class="block text-2xl font-extrabold text-gray-900 truncate" href=`/property/${property.id}`)= property.title
                                     p(class="text-sm text-gray-700 font-semibold")= property.category.name
 
                                     p(class="text-sm text-gray-500 font-semibold flex items-center") 
