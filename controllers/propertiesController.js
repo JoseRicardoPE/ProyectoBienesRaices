@@ -311,9 +311,23 @@ const deletePost = async (req, res) => {
 // * Muestra una propiedad para usuarios no registrados. Es pública
 const showProperty = async (req, res) => {
   // res.send("mostrando...")
-  res.render("properties/showProperties", {
+  const { id } = req.params;
 
+  // * Validar que la propiedad exista
+  const property = await Property.findByPk(id, {
+    include: [{ model: Category }, { model: Price }],
+  });
+  
+  if(!property) {
+    return res.redirect("/404");
+  }
+
+  res.render("properties/showProperties", {
+    property,
+    view: property.title
   })
+
+
 };
 
 export {

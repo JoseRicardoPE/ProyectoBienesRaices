@@ -12,6 +12,7 @@ export default {
     entry: {
         map: "./src/map.js",
         addImage: "./src/addImage.js",
+        showMap: "./src/showMap.js",
     }, 
     output: {
         filename: "[name].js",
