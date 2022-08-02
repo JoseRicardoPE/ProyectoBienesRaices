@@ -6,6 +6,15 @@ const admin = async (req, res) => {
   const { id } = req.user;
   // console.log(id);
 
+  // * Leer query string (Para hacer la paginación)
+  // console.log(req.query.pagina);
+  // * /^[0-9]$/  Es una expresión regular que valida que inicie con números y termine con números.
+  const { page } = req.query;
+  const regularExpression = /^[0-9]$/
+  if(!regularExpression.test(page)) {
+    return res.redirect("/properties?page=1");
+  }
+
   const properties = await Property.findAll({
     where: { userId: id },
     include: [{ model: Category }, { model: Price }],
@@ -326,7 +335,6 @@ const showProperty = async (req, res) => {
     property,
     view: property.title
   })
-
 
 };
 
