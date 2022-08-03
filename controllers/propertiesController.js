@@ -12,7 +12,7 @@ const admin = async (req, res) => {
     // console.log(req.query.pagina);
     // * /^[0-9]$/  Es una expresión regular que valida que inicie con números y termine con números.
     const { currentPage } = req.query;
-    const regularExpression = /^[0-9]$/;
+    const regularExpression = /^[1-9]$/;
     if (!regularExpression.test(currentPage)) {
       return res.redirect("/properties?currentPage=1");
     }
@@ -42,7 +42,10 @@ const admin = async (req, res) => {
       csrfToken: req.csrfToken(),
       properties,
       totalPages: Math.ceil(total / limit), //* Redondea hacia arriba
-      currentPage
+      currentPage: Number(currentPage),
+      total,
+      offset,
+      limit
     });
   } catch (error) {
     console.log(error);
