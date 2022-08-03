@@ -1,30 +1,52 @@
 import { validationResult } from "express-validator";
 import { Price, Category, Property } from "../models/index.js";
 import { unlink } from "node:fs/promises";
+// import { Promise } from "sequelize";
 
 const admin = async (req, res) => {
-  const { id } = req.user;
-  // console.log(id);
+  try {
+    const { id } = req.user;
+    // console.log(id);
 
-  // * Leer query string (Para hacer la paginación)
-  // console.log(req.query.pagina);
-  // * /^[0-9]$/  Es una expresión regular que valida que inicie con números y termine con números.
-  const { page } = req.query;
-  const regularExpression = /^[0-9]$/
-  if(!regularExpression.test(page)) {
-    return res.redirect("/properties?page=1");
+    // * Leer query string (Para hacer la paginación)
+    // console.log(req.query.pagina);
+    // * /^[0-9]$/  Es una expresión regular que valida que inicie con números y termine con números.
+    const { currentPage } = req.query;
+    const regularExpression = /^[0-9]$/;
+    if (!regularExpression.test(currentPage)) {
+      return res.redirect("/properties?currentPage=1");
+    }
+
+    // * Leer la página actual y saltear algunos registros. Ejemplo: si estamos en la página 1 que muestre los registros del 0 al 10, pagina 2 mostrar del 11 al 20 pero también debe saltar los registros del 0 al 10, y así sucesivamente.
+    const limit = 2;
+    const offset = currentPage * limit - limit;
+
+    const [properties, total] = await Promise.all([
+      Property.findAll({
+        limit,
+        offset,
+        where: { userId: id },
+        include: [{ model: Category }, { model: Price }],
+      }),
+      Property.count({
+        where: {
+          userId: id,
+        },
+      }),
+    ]);
+
+    // console.log(total);
+
+    res.render("properties/admin", {
+      view: "Mis Propiedades",
+      csrfToken: req.csrfToken(),
+      properties,
+      totalPages: Math.ceil(total / limit), //* Redondea hacia arriba
+      currentPage
+    });
+  } catch (error) {
+    console.log(error);
   }
-
-  const properties = await Property.findAll({
-    where: { userId: id },
-    include: [{ model: Category }, { model: Price }],
-  });
-
-  res.render("properties/admin", {
-    view: "Mis Propiedades",
-    csrfToken: req.csrfToken(),
-    properties,
-  });
 };
 
 // * Formulario para crear una nueva propiedad
@@ -326,16 +348,15 @@ const showProperty = async (req, res) => {
   const property = await Property.findByPk(id, {
     include: [{ model: Category }, { model: Price }],
   });
-  
-  if(!property) {
+
+  if (!property) {
     return res.redirect("/404");
   }
 
   res.render("properties/showProperties", {
     property,
-    view: property.title
-  })
-
+    view: property.title,
+  });
 };
 
 export {
